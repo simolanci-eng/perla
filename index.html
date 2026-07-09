@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gestionale Acquisti Ristorante Perla 3.0</title>
+<title>Gestionale Acquisti Ristorante Perla 3.1</title>
 <style>
 :root{--brown:#5b3500;--gold:#c79a3a;--cream:#fbf3e6;--green:#18743b;--red:#b00020;--blue:#1e5f99;--gray:#555}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:#222}
@@ -20,14 +20,37 @@ input[type=checkbox]{width:20px;height:20px}input[type=number]{width:85px}.small
 @media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:25px;background:white;color:black}#printArea h1{text-align:center}#printArea pre{white-space:pre-wrap;font-family:Arial;font-size:15px;line-height:1.45}}
 </style></head>
 <body>
-<header><h1>Gestionale Acquisti Ristorante Perla 3.0</h1><p>Ordini • Prodotti • Fatture • Storico • PDF • Backup</p></header>
+<header><h1>Gestionale Acquisti Ristorante Perla 3.1</h1><p>Ordini • Prodotti • Fatture • Storico • PDF • Backup</p></header>
 <section id="login"><h2>Accesso</h2><p class="small">Password iniziale: <b>perla</b></p><input id="password" type="password" placeholder="Password" style="width:100%;margin-bottom:10px" onkeydown="if(event.key==='Enter')login()"><button class="green" onclick="login()" style="width:100%">Entra</button></section>
 <section id="app"><div class="topbar"><button id="btn_home" class="active" onclick="showView('home')">🏠 Home</button><button id="btn_orders" onclick="showView('orders')">🛒 Ordini</button><button id="btn_products" onclick="showView('products')">📦 Prodotti</button><button id="btn_invoices" onclick="showView('invoices')">📄 Fatture</button><button id="btn_history" onclick="showView('history')">📚 Storico</button><button id="btn_settings" onclick="showView('settings')">⚙️ Impostazioni</button></div>
 <main>
 <section id="home" class="view active"><h2>Dashboard fornitori</h2><div class="cards" id="dashboard"></div><div class="panel"><h2>Come usarlo</h2><div class="small">Vai su <b>Ordini</b>, scegli il fornitore, spunta i prodotti, modifica le quantità e clicca <b>Genera ordine</b>.</div></div></section>
 <section id="orders" class="view"><div class="panel"><h2>🛒 Crea ordine</h2><div class="row"><select id="supplierSelect" onchange="setSupplier(this.value)"></select><input id="search" class="search" placeholder="Cerca prodotto..." oninput="renderOrderProducts()"><button class="green" onclick="generateOrder()">Genera ordine</button><button class="blue" onclick="copyOrder()">Copia</button><button onclick="printOrder()">PDF / Stampa</button><button class="gray" onclick="clearChecks()">Pulisci</button></div><textarea id="orderText" placeholder="Qui comparirà l'ordine da inviare..."></textarea></div><div class="panel"><h2 id="orderTitle">Prodotti</h2><div id="orderProducts"></div></div></section>
 <section id="products" class="view"><div class="panel"><h2>📦 Aggiungi / aggiorna prodotto</h2><div class="row"><select id="addSupplier"></select><input id="addCategory" placeholder="Categoria"><input id="addName" placeholder="Nome prodotto" style="min-width:260px"><select id="addUnit"><option>n.</option><option>kg</option><option>lt</option><option>ct</option></select><input type="number" id="addQty" value="1" min="0"><input id="addNote" placeholder="Note"><button class="green" onclick="addProduct()">Aggiungi</button></div></div><div class="panel"><h2>Elenco prodotti</h2><div id="allProducts"></div></div></section>
-<section id="invoices" class="view"><div class="panel"><h2>📄 Carica fattura / controllo prezzi</h2><p class="small">Registra il promemoria della fattura. In futuro leggeremo automaticamente i prezzi.</p><div class="row"><input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.csv"><select id="invoiceSupplier"></select><input id="invoiceNote" placeholder="Numero fattura / note" style="min-width:260px"><button class="blue" onclick="saveInvoiceMemo()">Salva promemoria</button></div><div id="invoiceList" style="margin-top:12px"></div></div></section>
+<section id="invoices" class="view">
+<div class="panel">
+<h2>📄 Archivio fatture / controllo prezzi</h2>
+<p class="small">
+Qui puoi registrare le fatture ricevute. Il file viene memorizzato come riferimento con nome file, fornitore, numero, data, totale e note.
+Per ora il gestionale salva i dati nel browser; conserva sempre anche il PDF originale in una cartella del PC.
+</p>
+
+<div class="row">
+<input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.csv">
+<select id="invoiceSupplier"></select>
+<input id="invoiceNumber" placeholder="N. fattura">
+<input id="invoiceDate" type="date">
+<input id="invoiceTotal" type="number" step="0.01" placeholder="Totale €">
+<input id="invoiceNote" placeholder="Note / periodo" style="min-width:260px">
+<button class="blue" onclick="saveInvoiceMemo()">Aggiungi fattura</button>
+</div>
+</div>
+
+<div class="panel">
+<h2>Fatture registrate</h2>
+<div id="invoiceList"></div>
+</div>
+</section>
 <section id="history" class="view"><div class="panel"><h2>📚 Storico ordini</h2><div id="historyTable"></div></div></section>
 <section id="settings" class="view"><div class="panel"><h2>⚙️ Impostazioni e backup</h2><div class="row"><button class="blue" onclick="exportBackup()">Scarica backup JSON</button><button onclick="document.getElementById('importFile').click()">Importa backup</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)"><button onclick="changePassword()">Cambia password</button><button class="red" onclick="resetData()">Ripristina dati iniziali</button></div></div></section>
 </main></section><div id="printArea"></div><div id="toast"></div>
@@ -54,9 +77,63 @@ function printOrder(){let txt=document.getElementById("orderText").value.trim();
 function clearChecks(){state.products.filter(p=>p.supplier===currentSupplier).forEach(p=>{let c=document.getElementById("chk_"+p.id);if(c)c.checked=false});document.getElementById("orderText").value=""}
 function renderAllProducts(){let h='<table><tr><th>Fornitore</th><th>Prodotto</th><th>Qtà</th><th>Ultimo</th></tr>';state.products.slice().sort((a,b)=>a.supplier.localeCompare(b.supplier)||a.name.localeCompare(b.name)).forEach(p=>h+=`<tr><td>${sIcon(p.supplier)} ${sName(p.supplier)}</td><td>${p.name}<div class="small">${p.category}</div></td><td>${p.unit}${p.usualQty}</td><td>${p.lastPurchase||"mai"}</td></tr>`);h+='</table>';document.getElementById("allProducts").innerHTML=h}
 function renderHistory(){let h='<table><tr><th>Data</th><th>Fornitore</th><th>Prodotto</th><th>Qtà</th></tr>';state.history.slice().reverse().forEach(x=>h+=`<tr><td>${x.date}</td><td>${sName(x.supplier)}</td><td>${x.product}</td><td>${x.unit||'n.'}${x.qty}</td></tr>`);h+='</table>';document.getElementById("historyTable").innerHTML=state.history.length?h:"<p>Nessuno storico.</p>"}
-function saveInvoiceMemo(){let f=document.getElementById("invoiceFile").files[0];if(!f)return toast("Seleziona fattura");state.invoices.push({date:today(),supplier:document.getElementById("invoiceSupplier").value,fileName:f.name,note:document.getElementById("invoiceNote").value});saveState();renderInvoices();toast("Promemoria fattura salvato")}
-function renderInvoices(){let h='<table><tr><th>Data</th><th>Fornitore</th><th>File</th><th>Note</th></tr>';state.invoices.slice().reverse().forEach(x=>h+=`<tr><td>${x.date}</td><td>${sName(x.supplier)}</td><td>${x.fileName}</td><td>${x.note}</td></tr>`);h+='</table>';document.getElementById("invoiceList").innerHTML=state.invoices.length?h:"<p class='small'>Nessuna fattura registrata.</p>"}
-function exportBackup(){let b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="backup_gestionale_perla_3_0.json";a.click();URL.revokeObjectURL(a.href)}
+function saveInvoiceMemo(){
+ let f=document.getElementById("invoiceFile").files[0];
+ let supplier=document.getElementById("invoiceSupplier").value;
+ let number=document.getElementById("invoiceNumber").value.trim();
+ let invDate=document.getElementById("invoiceDate").value;
+ let total=document.getElementById("invoiceTotal").value;
+ let note=document.getElementById("invoiceNote").value.trim();
+
+ if(!f) return toast("Seleziona il file della fattura");
+ if(!number) number="senza numero";
+ if(!invDate) invDate=today();
+
+ state.invoices.push({
+   id:"F"+Date.now(),
+   savedAt:today(),
+   invoiceDate:invDate,
+   supplier,
+   number,
+   total,
+   fileName:f.name,
+   note
+ });
+
+ saveState();
+ document.getElementById("invoiceFile").value="";
+ document.getElementById("invoiceNumber").value="";
+ document.getElementById("invoiceTotal").value="";
+ document.getElementById("invoiceNote").value="";
+ renderInvoices();
+ toast("Fattura aggiunta all'archivio");
+}
+
+function deleteInvoice(id){
+ if(!confirm("Eliminare questa fattura dall'archivio?")) return;
+ state.invoices=state.invoices.filter(x=>x.id!==id);
+ saveState();
+ renderInvoices();
+}
+
+function renderInvoices(){
+ let h='<table><tr><th>Data fattura</th><th>Fornitore</th><th>N. fattura</th><th>Totale</th><th>File</th><th>Note</th><th>Azioni</th></tr>';
+ state.invoices.slice().reverse().forEach(x=>{
+   h+=`<tr>
+   <td>${x.invoiceDate||x.date||""}</td>
+   <td>${sName(x.supplier)}</td>
+   <td>${x.number||""}</td>
+   <td>${x.total ? "€ "+Number(x.total).toFixed(2) : ""}</td>
+   <td>${x.fileName||""}</td>
+   <td>${x.note||""}</td>
+   <td><button class="red" onclick="deleteInvoice('${x.id}')">Elimina</button></td>
+   </tr>`;
+ });
+ h+='</table>';
+ document.getElementById("invoiceList").innerHTML=state.invoices.length?h:"<p class='small'>Nessuna fattura registrata.</p>";
+}
+
+function exportBackup(){let b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="backup_gestionale_perla_3_1.json";a.click();URL.revokeObjectURL(a.href)}
 function importBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);saveState();initUI();toast("Backup importato")}catch(err){toast("Backup non valido")}};r.readAsText(f)}
 function changePassword(){let p=prompt("Nuova password");if(p){state.password=p;saveState();toast("Password aggiornata")}}
 function resetData(){if(!confirm("Ripristinare dati iniziali?"))return;localStorage.removeItem(DBKEY);state=loadState();initUI();toast("Ripristinato")}
