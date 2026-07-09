@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gestionale Acquisti Ristorante Perla 2.1</title>
+<title>Gestionale Acquisti Ristorante Perla 2.2</title>
 <style>
 :root{--brown:#674008;--brown2:#3b2200;--gold:#c89b3c;--cream:#f8f1e6;--paper:#fffdf8;--green:#1e7b3c;--red:#b00020;--blue:#23629f;--gray:#555}
 *{box-sizing:border-box}
@@ -38,7 +38,7 @@ textarea{width:100%;height:210px;margin-top:10px;font-family:Arial;font-size:15p
 </head>
 <body>
 <header>
-<h1>Gestionale Acquisti Ristorante Perla 2.1</h1>
+<h1>Gestionale Acquisti Ristorante Perla 2.2</h1>
 <div>Dashboard fornitori • storico • ultimo acquisto • PDF • backup • multi-fornitore</div>
 </header>
 
@@ -89,6 +89,23 @@ textarea{width:100%;height:210px;margin-top:10px;font-family:Arial;font-size:15p
     <input id="addNote" placeholder="Note">
     <button class="green" onclick="addProduct()">Aggiungi / aggiorna</button>
   </div>
+</section>
+
+
+<section class="panel">
+  <h2>📄 Carica Fattura / Controllo Prezzi</h2>
+  <p class="small">
+    Funzione preparata per il controllo prezzi. Per ora puoi caricare una fattura PDF, foto o file,
+    inserire una nota e salvarla come promemoria. Nella versione cloud useremo questa sezione per leggere
+    automaticamente prodotti, quantità e prezzi.
+  </p>
+  <div class="row">
+    <input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.csv">
+    <input id="invoiceSupplier" placeholder="Fornitore es. Butegu, Agrigel..." style="min-width:220px">
+    <input id="invoiceNote" placeholder="Note fattura / numero / periodo" style="min-width:260px">
+    <button class="blue" onclick="saveInvoiceMemo()">Salva promemoria fattura</button>
+  </div>
+  <div id="invoiceList" style="margin-top:12px"></div>
 </section>
 
 <section class="panel">
